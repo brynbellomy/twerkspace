@@ -1,0 +1,14 @@
+#!/usr/bin/env node --harmony --es_staging --harmony_templates --harmony_arrow_functions --harmony_modules
+
+'use strict';
+
+let theModule = require('../build')
+
+let argv = require('yargs')
+                .demand('f').alias('f', 'file').describe('f', 'A JSON or YAML file describing the workspace.')
+                .argv
+
+
+theModule.loadWorkspace(argv.f)
+
+

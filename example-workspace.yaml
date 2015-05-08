@@ -1,0 +1,11 @@
+modules:
+    url:
+    - http://illumntr.com
+    - https://github.com
+    subl:
+    - ./example-tab-set.json
+    - ../gistpod/gistpod.sublime-project
+    - ../cli-components/cli-components.sublime-project
+    exec:
+    - command: say
+      args: [ hello, how, are, you, doing ]

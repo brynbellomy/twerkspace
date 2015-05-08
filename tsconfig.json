@@ -1,0 +1,18 @@
+{
+    "compilerOptions": {
+        "module": "commonjs",
+        "target": "es5",
+        "declaration": false,
+        "sourceMap": true,
+        "outDir": "build"
+    },
+    "files": [
+        "src/index.ts"
+      , "src/Handler.ts"
+      , "src/URLHandler.ts"
+      , "src/ExecHandler.ts"
+      , "src/SublimeHandler.ts"
+      , "typings/tsd.d.ts"
+    ]
+}
+
