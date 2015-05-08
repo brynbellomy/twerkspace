@@ -1,6 +1,6 @@
 {
 	"name": "twerkspace",
-	"version": "1.0.0",
+	"version": "1.0.1",
 	"description": "Opens a collection of things (URLs/tabs, shell commands, Sublime projects, etc.) from a simple JSON or YAML config file.",
 	"bin": {
 		"twrk": "bin/twrk"
