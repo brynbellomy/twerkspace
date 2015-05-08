@@ -14,5 +14,8 @@
 		"cli-components": "0.2.x",
 		"yargs": "3.8.x",
 		"js-yaml": "3.3.x"
+	},
+	"devDependencies": {
+		"typescript": "1.5.0-alpha"
 	}
 }
