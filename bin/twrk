@@ -6,9 +6,15 @@ let theModule = require('../build')
 
 let argv = require('yargs')
                 .demand('f').alias('f', 'file').describe('f', 'A JSON or YAML file describing the workspace.')
+                .alias('l', 'list').describe('l', 'List the contents of the workspace.').boolean('l')
                 .argv
-
 
 theModule.loadWorkspace(argv.f)
 
+if (argv.list === true) {
+    theModule.listWorkspace()
+}
+else {
+    theModule.executeWorkspace()
+}
 

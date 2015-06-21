@@ -4,6 +4,7 @@ var path = require('path');
 var URLHandler_1 = require('./URLHandler');
 var ExecHandler_1 = require('./ExecHandler');
 var SublimeHandler_1 = require('./SublimeHandler');
+var helpers_1 = require('./helpers');
 var HANDLERS = [new ExecHandler_1.ExecHandler(), new URLHandler_1.URLHandler(), new SublimeHandler_1.SublimeHandler(),];
 function loadWorkspace(filename) {
     var workspace = readWorkspaceConfig(filename);
@@ -11,17 +12,28 @@ function loadWorkspace(filename) {
     for (var _i = 0; _i < HANDLERS.length; _i++) {
         var handler = HANDLERS[_i];
         var moduleID = handler.moduleID;
-        if (nonNull(workspace.modules[moduleID])) {
+        if (!helpers_1.nullish(workspace.modules[moduleID])) {
             var moduleData = workspace.modules[moduleID];
             handler.appendData(moduleData);
         }
     }
-    for (var _a = 0; _a < HANDLERS.length; _a++) {
-        var handler_1 = HANDLERS[_a];
-        handler_1.execute();
-    }
 }
 exports.loadWorkspace = loadWorkspace;
+function executeWorkspace() {
+    for (var _i = 0; _i < HANDLERS.length; _i++) {
+        var handler = HANDLERS[_i];
+        handler.execute();
+    }
+}
+exports.executeWorkspace = executeWorkspace;
+function listWorkspace() {
+    var obj = HANDLERS.reduce(function (into, handler) {
+        into[handler.moduleID] = handler.list();
+        return into;
+    }, {});
+    require('eyes').inspect(obj);
+}
+exports.listWorkspace = listWorkspace;
 function readWorkspaceConfig(filename) {
     if (!fs.existsSync(filename)) {
         throw new Error(filename + " does not exist.");
@@ -32,8 +44,5 @@ function readWorkspaceConfig(filename) {
         case '.yaml': return yaml.load(contents);
         default: throw new Error('The specified file must be either a JSON or YAML file, and must end in either ".json" or ".yaml".');
     }
-}
-function nonNull(val) {
-    return val !== null && val !== undefined;
 }
 //# sourceMappingURL=index.js.map

@@ -1,0 +1,15 @@
+{
+    "title": "Exec",
+    "type": "object",
+    "properties": {
+        "name":     { "type": "string" },
+        "command":  { "type": "string" },
+        "cwd":      { "type": "string" },
+        "args": {
+            "description": "Arguments to pass to the command",
+            "type": "array",
+            "items": { "type": "string" }
+        }
+    },
+    "required": ["name", "command"]
+}

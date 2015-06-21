@@ -1,21 +1,30 @@
 
 import * as path from 'path'
+import * as fs from 'fs'
 import {spawn} from 'child_process'
-import {Handler} from './Handler'
+import {Handler, IDataItem} from './Handler'
+import {nullish} from './helpers'
 
 
-export class SublimeHandler implements Handler
+export interface ISublimeData extends IDataItem {
+    path: string;
+}
+
+export class SublimeHandler extends Handler<ISublimeData>
 {
-    files: string[] = [];
     get moduleID(): string { return 'subl' }
 
-    constructor() {}
-
-    appendData (data:any): void {
-        if (!(data instanceof Array)) {
-            throw new Error(`Sublime files must be given as an array of strings containing the files to open.`)
+    validate (data: ISublimeData): void {
+        super.validate(data)
+        data.path = data.path.replace(/^~/, process.env['HOME'])
+        data.path = path.resolve(data.path)
+        if (fs.existsSync(data.path) === false) {
+            throw new Error(`Path ${data.path} does not exist.`)
         }
-        this.files = this.files.concat(data)
+    }
+
+    render (item: ISublimeData): string {
+        return item.path
     }
 
     execute(): void {
@@ -24,24 +33,26 @@ export class SublimeHandler implements Handler
     }
 
     openFiles(): void {
-        let files = this.files.filter((file) => path.extname(file) !== '.sublime-project')
+        const files = this.data.filter((file) => path.extname(file.path) !== '.sublime-project')
+                               .map((file) => file.path)
+
         if (files.length === 0) {
             return
         }
 
-        let spawnOptions = { detached: true, }
+        const spawnOptions = { detached: true, }
         spawn(this.SUBL_EXECUTABLE, files, spawnOptions)
     }
 
     openProjects(): void {
-        let projects = this.files.filter((file) => path.extname(file) === '.sublime-project')
+        const projects = this.data.filter((file) => path.extname(file.path) === '.sublime-project')
         if (projects.length === 0) {
             return
         }
 
-        for (let proj of projects) {
-            let args = ['--project', proj]
-            let spawnOptions = { detached: true, }
+        for (const proj of projects) {
+            const args = ['--project', proj.path]
+            const spawnOptions = { detached: true, }
             spawn(this.SUBL_EXECUTABLE, args, spawnOptions)
         }
     }

@@ -2,31 +2,42 @@
 import * as yaml from 'js-yaml'
 import * as fs from 'fs'
 import * as path from 'path'
-import {Handler} from './Handler'
+import {Handler, IDataItem} from './Handler'
 import {URLHandler} from './URLHandler'
 import {ExecHandler} from './ExecHandler'
 import {SublimeHandler} from './SublimeHandler'
+import {nullish} from './helpers'
 
 
-let HANDLERS: Handler[] = [ new ExecHandler(), new URLHandler(), new SublimeHandler(), ]
+const HANDLERS: Handler<IDataItem>[] = [ new ExecHandler(), new URLHandler(), new SublimeHandler(), ]
 
 
 export function loadWorkspace (filename:string): void
 {
-    let workspace = readWorkspaceConfig(filename)
+    const workspace = readWorkspaceConfig(filename)
 
     // go through the provided file and, for each module/handler specified, give that module its unaltered data from the file
-    for (var handler of HANDLERS) {
-        let moduleID = handler.moduleID
-        if (nonNull(workspace.modules[ moduleID ])) {
-            let moduleData = workspace.modules[ moduleID ]
+    for (const handler of HANDLERS) {
+        const moduleID = handler.moduleID
+        if (!nullish(workspace.modules[ moduleID ])) {
+            const moduleData = workspace.modules[ moduleID ]
             handler.appendData(moduleData)
         }
     }
+}
 
-    for (let handler of HANDLERS) {
+export function executeWorkspace(): void {
+    for (const handler of HANDLERS) {
         handler.execute()
     }
+}
+
+export function listWorkspace(): void {
+    const obj = HANDLERS.reduce((into, handler) => {
+        into[handler.moduleID] = handler.list()
+        return into
+    }, {})
+    require('eyes').inspect(obj)
 }
 
 
@@ -54,11 +65,4 @@ export interface ConfigFile {
 export interface ConfigFileModulesSection {
     [name: string]: any;
 }
-
-
-
-function nonNull (val) {
-    return val !== null && val !== undefined
-}
-
 
